@@ -1,6 +1,7 @@
 from pathlib import Path
-import numpy as np
 import time
+import numpy as np
+
 import mujoco
 import mujoco.viewer
 from loop_rate_limiters import RateLimiter
@@ -9,7 +10,6 @@ import mink
 
 _HERE = Path(__file__).parent
 _XML = _HERE / "unitree_g1" / "scene.xml"
-
 
 def _joint_nq(jtype: int) -> int:
     if jtype == mujoco.mjtJoint.mjJNT_FREE:  # 7
@@ -51,42 +51,73 @@ def build_qstar_with_joint_targets(model, qpos, targets):
         
     return q_star
 
+def check_joint_limits(model, data, tolerance=1e-4):
+    """
+    Check if any joints are at or beyond their limits
+    
+    Args:
+        model: MuJoCo model
+        data: MuJoCo data
+        tolerance: Small tolerance for limit detection
+    """
+    
+    for i in range(model.njnt):
+        joint_name = mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, i)
+        if joint_name is None:
+            continue
+            
+        joint = model.joint(joint_name)
+        joint_type = int(joint.type)
+        
+        # Only check joints with limits (hinge and slide joints)
+        if joint_type in (mujoco.mjtJoint.mjJNT_HINGE, mujoco.mjtJoint.mjJNT_SLIDE):
+            qpos_addr = joint.qposadr[0]
+            current_pos = data.qpos[qpos_addr]
+            
+            # Get joint limits
+            joint_range = joint.range
+            if np.any(joint_range != 0):  # Joint has limits defined
+                lower_limit = float(joint_range[0]) - tolerance
+                upper_limit = float(joint_range[1]) + tolerance
+                
+                # Check for violations
+                assert current_pos >= lower_limit and current_pos <= upper_limit, f"Joint {joint_name} is at {current_pos} which is outside the limits {lower_limit} to {upper_limit}"
+    return
+
 if __name__ == "__main__":
     model = mujoco.MjModel.from_xml_path(_XML.as_posix())
 
     configuration = mink.Configuration(model)
-    feet = ["right_foot", "left_foot"]
 
     tasks = [
-        pelvis_orientation_task := mink.FrameTask(
+        pelvis_pose_task := mink.FrameTask(
             frame_name="pelvis",
             frame_type="body",
             position_cost=0.0,
             orientation_cost=5.0,
             lm_damping=1.0,
         ),
-        posture_task := mink.PostureTask(model, cost=5),
+        posture_task := mink.PostureTask(model, cost=5.0),
         com_task := mink.ComTask(cost=10.0),
-    ]
-
-    feet_tasks = []
-    for foot in feet:
-        task = mink.FrameTask(
-            frame_name=foot,
+        left_foot_task := mink.FrameTask(
+            frame_name="left_foot",
             frame_type="site",
-            position_cost=10.0,
-            orientation_cost=1.0,
+            position_cost=100.0,
+            orientation_cost=0.0,
             lm_damping=1.0,
-        )
-        feet_tasks.append(task)
-    tasks.extend(feet_tasks)
+        ),
+        right_foot_task := mink.FrameTask(
+            frame_name="right_foot",
+            frame_type="site",
+            position_cost=100.0,
+            orientation_cost=0.0,
+            lm_damping=1.0,
+        ),
+    ]
 
     limits = [
-        mink.ConfigurationLimit(model),
+        mink.ConfigurationLimit(model)
     ]
-
-    com_mid = model.body("com_target").mocapid[0]
-    feet_mid = [model.body(f"{foot}_target").mocapid[0] for foot in feet]
 
     model = configuration.model
     data = configuration.data
@@ -100,14 +131,11 @@ if __name__ == "__main__":
         # Initialize to the home keyframe.
         configuration.update_from_keyframe("stand")
         posture_task.set_target_from_configuration(configuration)
-        pelvis_orientation_task.set_target_from_configuration(configuration)
-        # Initialize mocap bodies at their respective sites.
-        for foot in feet:
-            mink.move_mocap_to_frame(model, data, f"{foot}_target", foot, "site")
-        data.mocap_pos[com_mid] = data.subtree_com[1]
+        pelvis_pose_task.set_target_from_configuration(configuration)
+        left_foot_task.set_target_from_configuration(configuration)
+        right_foot_task.set_target_from_configuration(configuration)
 
-        root_height_range = np.arange(0.3, 0.76, 0.01)
-        root_height_range = root_height_range[::-1]
+        root_height_range = np.arange(0.2, 0.76, 0.01)[::-1]
         height_index = 0
 
         root_pitch_range = np.arange(0.0, 1.57, 0.01)
@@ -115,43 +143,42 @@ if __name__ == "__main__":
 
         rate = RateLimiter(frequency=200.0, warn=False)
         while viewer.is_running():
-            # Update task targets.
-            com_task.set_target(np.array([0, 0, root_height_range[height_index]]))
-            pelvis_orientation_task.set_target(
+            # Update task targets
+            # com_task.set_target(np.array([0, 0, root_height_range[height_index]]))
+            com_task.set_target(np.array([0, 0, 0.4]))
+            pelvis_pose_task.set_target(
                 mink.SE3.from_rotation(
                     rotation=mink.SO3.from_rpy_radians(0, root_pitch_range[pitch_index], 0),
                 )
             )
 
-
             q_star = build_qstar_with_joint_targets(
-                        model, 
-                        data.qpos, 
-                        {   
-                            "left_shoulder_pitch_joint": 0.0,
-                            "left_shoulder_roll_joint": 0.0,
-                            "right_shoulder_pitch_joint": 0.0,
-                            "right_shoulder_roll_joint": 0.0,
-                            "waist_pitch_joint": 0.0,
-                            "waist_roll_joint": 0.0,
-                        })
+                            model, 
+                            data.qpos, 
+                            {   
+                                "left_shoulder_pitch_joint": 0.0,
+                                "left_shoulder_roll_joint": 0.0,
+                                "right_shoulder_pitch_joint": 0.0,
+                                "right_shoulder_roll_joint": 0.0,
+                                "left_elbow_joint": 0.0,
+                                "right_elbow_joint": 0.0,
+                                "waist_pitch_joint": 0.0,
+                                "waist_roll_joint": 0.0,
+                            }
+            )
             data.qpos[:] = q_star
             mujoco.mj_forward(model, data)
             posture_task.set_target(q_star)
-
-            for i, foot_task in enumerate(feet_tasks):
-                foot_task.set_target(mink.SE3.from_mocap_id(data, feet_mid[i]))
-
-            data.mocap_pos[com_mid] = data.subtree_com[1]
 
             vel = mink.solve_ik(
                 configuration, tasks, rate.dt, solver, 1e-1, limits=limits
             )
             configuration.integrate_inplace(vel, rate.dt)
-            mujoco.mj_camlight(model, data)
+            check_joint_limits(model, data)
 
             # Note the below are optional: they are used to visualize the output of the
             # fromto sensor which is used by the collision avoidance constraint.
+            mujoco.mj_camlight(model, data)
             mujoco.mj_fwdPosition(model, data)
             mujoco.mj_sensorPos(model, data)
 
