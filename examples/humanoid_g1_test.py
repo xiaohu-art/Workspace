@@ -55,38 +55,31 @@ if __name__ == "__main__":
     model = mujoco.MjModel.from_xml_path(_XML.as_posix())
 
     configuration = mink.Configuration(model)
-    feet = ["right_foot", "left_foot"]
 
     tasks = [
         pelvis_orientation_task := mink.FrameTask(
             frame_name="pelvis",
             frame_type="body",
-            position_cost=0.0,
-            orientation_cost=1.0,
-            lm_damping=1.0,
-        ),
-        torso_orientation_task := mink.FrameTask(
-            frame_name="torso_link",
-            frame_type="body",
-            position_cost=0.0,
-            orientation_cost=1.0,
+            position_cost=5.0,
+            orientation_cost=5.0,
             lm_damping=1.0,
         ),
         posture_task := mink.PostureTask(model, cost=5.0),
-        com_task := mink.ComTask(cost=10.0),
-    ]
-
-    feet_tasks = []
-    for foot in feet:
-        task = mink.FrameTask(
-            frame_name=foot,
+        left_foot_task := mink.FrameTask(
+            frame_name="left_foot",
             frame_type="site",
             position_cost=10.0,
             orientation_cost=1.0,
             lm_damping=1.0,
-        )
-        feet_tasks.append(task)
-    tasks.extend(feet_tasks)
+        ),
+        right_foot_task := mink.FrameTask(
+            frame_name="right_foot",
+            frame_type="site",
+            position_cost=10.0,
+            orientation_cost=1.0,
+            lm_damping=1.0,
+        ),
+    ]
 
     collision_pairs = [
         (["left_ankle_roll_collision", "right_ankle_roll_collision"], ["floor"]),
@@ -95,16 +88,13 @@ if __name__ == "__main__":
         model=model,
         geom_pairs=collision_pairs,  # type: ignore
         minimum_distance_from_collisions=0.05,
-        collision_detection_distance=0.1,
+        collision_detection_distance=0.05,
     )
 
     limits = [
         mink.ConfigurationLimit(model),
         collision_avoidance_limit,
     ]
-
-    com_mid = model.body("pelvis").mocapid[0]
-    feet_mid = [model.body(f"{foot}_target").mocapid[0] for foot in feet]
 
     model = configuration.model
     data = configuration.data
@@ -119,11 +109,6 @@ if __name__ == "__main__":
         configuration.update_from_keyframe("stand")
         posture_task.set_target_from_configuration(configuration)
         pelvis_orientation_task.set_target_from_configuration(configuration)
-        torso_orientation_task.set_target_from_configuration(configuration)
-        # Initialize mocap bodies at their respective sites.
-        for foot in feet:
-            mink.move_mocap_to_frame(model, data, f"{foot}_target", foot, "site")
-        data.mocap_pos[com_mid] = data.subtree_com[1]
 
         root_height_range = np.arange(0.1, 0.76, 0.01)
         root_height_range = root_height_range[::-1]
@@ -135,13 +120,12 @@ if __name__ == "__main__":
         rate = RateLimiter(frequency=200.0, warn=False)
         while viewer.is_running():
             # Update task targets.
-            com_task.set_target(np.array([0, 0, root_height_range[height_index]]))
-            # pelvis_orientation_task.set_target(
-            #     mink.SE3.from_rotation_and_translation(
-            #         rotation=mink.SO3.from_rpy_radians(0, root_pitch_range[pitch_index], 0),
-            #         translation=np.array([0, 0, root_height_range[height_index]]),
-            #     )
-            # )
+            pelvis_orientation_task.set_target(
+                mink.SE3.from_rotation_and_translation(
+                    rotation=mink.SO3.from_rpy_radians(0, root_pitch_range[pitch_index], 0),
+                    translation=np.array([0, 0, root_height_range[height_index]]),
+                )
+            )
 
             q_star = build_qstar_with_joint_targets(model, 
                                                     data.qpos, 
@@ -154,8 +138,17 @@ if __name__ == "__main__":
             mujoco.mj_forward(model, data)
             posture_task.set_target(q_star)
 
-            for i, foot_task in enumerate(feet_tasks):
-                foot_task.set_target(mink.SE3.from_mocap_id(data, feet_mid[i]))
+            # left foot target: [-0.00142, 0.11851, 0.0383]
+            # right foot target: [-0.00142, -0.11851, 0.0383]
+            left_foot_task.set_target(
+                mink.SE3.from_translation(
+                    translation=np.array([-0.00142, 0.11851, 0.0383]),
+                )
+            )
+            right_foot_task.set_target(
+                mink.SE3.from_translation(
+                translation=np.array([-0.00142, -0.11851, 0.0383]),
+            ))
 
             vel = mink.solve_ik(
                 configuration, tasks, rate.dt, solver, 1e-1, limits=limits

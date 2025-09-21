@@ -54,4 +54,9 @@
       0 -1.05 0 0 0 0 0
       "/>
   </keyframe>
+
+  <sensor>
+    <fromto geom1="left_ankle_roll_collision" geom2="floor" cutoff="0.5"/>
+    <fromto geom1="right_ankle_roll_collision" geom2="floor" cutoff="0.5"/>
+  </sensor>
 </mujoco>
