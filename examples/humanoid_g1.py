@@ -25,13 +25,6 @@ if __name__ == "__main__":
             orientation_cost=1.0,
             lm_damping=1.0,
         ),
-        torso_orientation_task := mink.FrameTask(
-            frame_name="torso_link",
-            frame_type="body",
-            position_cost=0.0,
-            orientation_cost=1.0,
-            lm_damping=1.0,
-        ),
         posture_task := mink.PostureTask(model, cost=1e-1),
         com_task := mink.ComTask(cost=10.0),
     ]
@@ -68,7 +61,6 @@ if __name__ == "__main__":
         configuration.update_from_keyframe("stand")
         posture_task.set_target_from_configuration(configuration)
         pelvis_orientation_task.set_target_from_configuration(configuration)
-        torso_orientation_task.set_target_from_configuration(configuration)
         # Initialize mocap bodies at their respective sites.
         for foot in feet:
             mink.move_mocap_to_frame(model, data, f"{foot}_target", foot, "site")
