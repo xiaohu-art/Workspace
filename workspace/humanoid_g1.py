@@ -103,14 +103,14 @@ if __name__ == "__main__":
             frame_name="left_foot",
             frame_type="site",
             position_cost=100.0,
-            orientation_cost=0.0,
+            orientation_cost=100.0,
             lm_damping=1.0,
         ),
         right_foot_task := mink.FrameTask(
             frame_name="right_foot",
             frame_type="site",
             position_cost=100.0,
-            orientation_cost=0.0,
+            orientation_cost=100.0,
             lm_damping=1.0,
         ),
     ]
@@ -123,72 +123,67 @@ if __name__ == "__main__":
     data = configuration.data
     solver = "daqp"
 
+    root_height_range = np.arange(0.2, 0.76, 0.01)[::-1]
+    # root_pitch_range = np.arange(0.0, 1.57, 0.01)
+    root_pitch_range = np.arange(0.0, 1.0, 0.01)
+
     with mujoco.viewer.launch_passive(
         model=model, data=data, show_left_ui=False, show_right_ui=False
     ) as viewer:
         mujoco.mjv_defaultFreeCamera(model, viewer.cam)
 
         # Initialize to the home keyframe.
-        configuration.update_from_keyframe("stand")
-        posture_task.set_target_from_configuration(configuration)
-        pelvis_pose_task.set_target_from_configuration(configuration)
-        left_foot_task.set_target_from_configuration(configuration)
-        right_foot_task.set_target_from_configuration(configuration)
-
-        root_height_range = np.arange(0.2, 0.76, 0.01)[::-1]
-        height_index = 0
-
-        root_pitch_range = np.arange(0.0, 1.57, 0.01)
-        pitch_index = 0
+        def _initialize_configuration():
+            configuration.update_from_keyframe("stand")
+            posture_task.set_target_from_configuration(configuration)
+            pelvis_pose_task.set_target_from_configuration(configuration)
+            left_foot_task.set_target_from_configuration(configuration)
+            right_foot_task.set_target_from_configuration(configuration)
 
         rate = RateLimiter(frequency=200.0, warn=False)
         while viewer.is_running():
-            # Update task targets
-            # com_task.set_target(np.array([0, 0, root_height_range[height_index]]))
-            com_task.set_target(np.array([0, 0, 0.4]))
-            pelvis_pose_task.set_target(
-                mink.SE3.from_rotation(
-                    rotation=mink.SO3.from_rpy_radians(0, root_pitch_range[pitch_index], 0),
-                )
-            )
+            for height in root_height_range:
+                print(f"Solving for height: {height:.2f}")
+                _initialize_configuration()
+                for pitch_rad in root_pitch_range:
+                    # Update task targets
+                    com_task.set_target(np.array([0, 0, height]))
+                    pelvis_pose_task.set_target(
+                        mink.SE3.from_rotation(
+                            rotation=mink.SO3.from_rpy_radians(0, pitch_rad, 0),
+                        )
+                    )
 
-            q_star = build_qstar_with_joint_targets(
-                            model, 
-                            data.qpos, 
-                            {   
-                                "left_shoulder_pitch_joint": 0.0,
-                                "left_shoulder_roll_joint": 0.0,
-                                "right_shoulder_pitch_joint": 0.0,
-                                "right_shoulder_roll_joint": 0.0,
-                                "left_elbow_joint": 0.0,
-                                "right_elbow_joint": 0.0,
-                                "waist_pitch_joint": 0.0,
-                                "waist_roll_joint": 0.0,
-                            }
-            )
-            data.qpos[:] = q_star
-            mujoco.mj_forward(model, data)
-            posture_task.set_target(q_star)
+                    q_star = build_qstar_with_joint_targets(
+                                    model, 
+                                    data.qpos, 
+                                    {   
+                                        "left_shoulder_pitch_joint": 0.0,
+                                        "left_shoulder_roll_joint": 0.0,
+                                        "right_shoulder_pitch_joint": 0.0,
+                                        "right_shoulder_roll_joint": 0.0,
+                                        "left_elbow_joint": 0.0,
+                                        "right_elbow_joint": 0.0,
+                                        "waist_pitch_joint": 0.0,
+                                        "waist_roll_joint": 0.0,
+                                    }
+                    )
+                    data.qpos[:] = q_star
+                    mujoco.mj_forward(model, data)
+                    posture_task.set_target(q_star)
 
-            vel = mink.solve_ik(
-                configuration, tasks, rate.dt, solver, 1e-1, limits=limits
-            )
-            configuration.integrate_inplace(vel, rate.dt)
-            check_joint_limits(model, data)
+                    vel = mink.solve_ik(
+                        configuration, tasks, rate.dt, solver, 1e-1, limits=limits
+                    )
+                    configuration.integrate_inplace(vel, rate.dt)
+                    check_joint_limits(model, data)
 
-            # Note the below are optional: they are used to visualize the output of the
-            # fromto sensor which is used by the collision avoidance constraint.
-            mujoco.mj_camlight(model, data)
-            mujoco.mj_fwdPosition(model, data)
-            mujoco.mj_sensorPos(model, data)
+                    mujoco.mj_camlight(model, data)
+                    mujoco.mj_fwdPosition(model, data)
+                    mujoco.mj_sensorPos(model, data)
 
-            # Visualize at fixed FPS.
-            viewer.sync()
-            rate.sleep()
-            # height_index += 1
-            # if height_index >= len(root_height_range):
-            #     input("Press Enter to continue...")
-            pitch_index += 1
-            if pitch_index >= len(root_pitch_range):
-                input("Press Enter to continue...")
-            time.sleep(0.2)
+                    # Visualize at fixed FPS.
+                    viewer.sync()
+                    rate.sleep()
+                    time.sleep(0.05)
+                # input("Press Enter to continue...")
