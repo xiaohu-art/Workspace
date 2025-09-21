@@ -1,6 +1,7 @@
 from pathlib import Path
-import numpy as np
 import time
+import numpy as np
+
 import mujoco
 import mujoco.viewer
 from loop_rate_limiters import RateLimiter
@@ -10,6 +11,45 @@ import mink
 _HERE = Path(__file__).parent
 _XML = _HERE / "unitree_g1" / "scene.xml"
 
+def _joint_nq(jtype: int) -> int:
+    if jtype == mujoco.mjtJoint.mjJNT_FREE:  # 7
+        return 7
+    if jtype == mujoco.mjtJoint.mjJNT_BALL:  # 4
+        return 4
+    if jtype in (mujoco.mjtJoint.mjJNT_HINGE, mujoco.mjtJoint.mjJNT_SLIDE):
+        return 1
+    raise ValueError(f"Unknown joint type: {jtype}")
+
+def build_qstar_with_joint_targets(model, qpos, targets):
+    """
+    build q_star from q_current and targets
+    targets: dict[str, float | sequence]
+        - for hinge/slide: scalar
+        - for ball: quaternion [w,x,y,z] (normalized)
+        - for free: [x,y,z | w,x,y,z]
+    """
+    q_star = qpos.copy()
+    for name, value in targets.items():
+        j = model.joint(name)
+        nq = _joint_nq(int(j.type))
+        start = j.qposadr[0]
+        if nq == 1:     # hinge/slide
+            v = float(value)
+            lo, hi = float(j.range[0]), float(j.range[1])
+            v = np.clip(v, lo, hi) # clip to range
+            q_star[start] = v
+        elif nq == 4:  # ball
+            arr = np.asarray(value, dtype=float).reshape(nq)
+            norm = np.linalg.norm(arr)
+            assert norm == 1.0, "ball joint must be normalized"
+            q_star[start:start+nq] = arr
+        elif nq == 7:  # free
+            arr = np.asarray(value, dtype=float).reshape(nq)
+            q_star[start:start+nq] = arr
+        else:
+            raise ValueError(f"Unknown joint type: {j.type}")
+        
+    return q_star
 
 if __name__ == "__main__":
     model = mujoco.MjModel.from_xml_path(_XML.as_posix())
@@ -32,7 +72,7 @@ if __name__ == "__main__":
             orientation_cost=1.0,
             lm_damping=1.0,
         ),
-        posture_task := mink.PostureTask(model, cost=1e-1),
+        posture_task := mink.PostureTask(model, cost=5.0),
         com_task := mink.ComTask(cost=10.0),
     ]
 
@@ -48,11 +88,22 @@ if __name__ == "__main__":
         feet_tasks.append(task)
     tasks.extend(feet_tasks)
 
+    collision_pairs = [
+        (["left_ankle_roll_collision", "right_ankle_roll_collision"], ["floor"]),
+    ]
+    collision_avoidance_limit = mink.CollisionAvoidanceLimit(
+        model=model,
+        geom_pairs=collision_pairs,  # type: ignore
+        minimum_distance_from_collisions=0.05,
+        collision_detection_distance=0.1,
+    )
+
     limits = [
         mink.ConfigurationLimit(model),
+        collision_avoidance_limit,
     ]
 
-    com_mid = model.body("com_target").mocapid[0]
+    com_mid = model.body("pelvis").mocapid[0]
     feet_mid = [model.body(f"{foot}_target").mocapid[0] for foot in feet]
 
     model = configuration.model
@@ -74,7 +125,7 @@ if __name__ == "__main__":
             mink.move_mocap_to_frame(model, data, f"{foot}_target", foot, "site")
         data.mocap_pos[com_mid] = data.subtree_com[1]
 
-        root_height_range = np.arange(0.3, 0.76, 0.01)
+        root_height_range = np.arange(0.1, 0.76, 0.01)
         root_height_range = root_height_range[::-1]
         height_index = 0
 
@@ -85,15 +136,26 @@ if __name__ == "__main__":
         while viewer.is_running():
             # Update task targets.
             com_task.set_target(np.array([0, 0, root_height_range[height_index]]))
-            pelvis_orientation_task.set_target(
-                mink.SE3.from_rotation(
-                    rotation=mink.SO3.from_rpy_radians(0, root_pitch_range[pitch_index], 0),
-                )
-            )
+            # pelvis_orientation_task.set_target(
+            #     mink.SE3.from_rotation_and_translation(
+            #         rotation=mink.SO3.from_rpy_radians(0, root_pitch_range[pitch_index], 0),
+            #         translation=np.array([0, 0, root_height_range[height_index]]),
+            #     )
+            # )
+
+            q_star = build_qstar_with_joint_targets(model, 
+                                                    data.qpos, 
+                                                    {
+                                                        "waist_pitch_joint": 0.0,
+                                                        "waist_roll_joint": 0.0,
+                                                    }
+                                                    )
+            data.qpos[:] = q_star
+            mujoco.mj_forward(model, data)
+            posture_task.set_target(q_star)
+
             for i, foot_task in enumerate(feet_tasks):
                 foot_task.set_target(mink.SE3.from_mocap_id(data, feet_mid[i]))
-
-            data.mocap_pos[com_mid] = data.subtree_com[1]
 
             vel = mink.solve_ik(
                 configuration, tasks, rate.dt, solver, 1e-1, limits=limits
@@ -109,10 +171,10 @@ if __name__ == "__main__":
             # Visualize at fixed FPS.
             viewer.sync()
             rate.sleep()
-            # height_index += 1
-            # if height_index >= len(root_height_range):
-            #     input("Press Enter to continue...")
-            pitch_index += 1
-            if pitch_index >= len(root_pitch_range):
+            height_index += 1
+            if height_index >= len(root_height_range):
                 input("Press Enter to continue...")
+            # pitch_index += 1
+            # if pitch_index >= len(root_pitch_range):
+            #     input("Press Enter to continue...")
             time.sleep(0.2)
