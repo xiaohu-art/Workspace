@@ -31,7 +31,7 @@ def build_qstar_with_joint_targets(model, qpos, targets):
     q_star = qpos.copy()
     for name, value in targets.items():
         j = model.joint(name)
-        nq = _joint_nq(int(j.type))
+        nq = _joint_nq(int(j.type.item()))
         start = j.qposadr[0]
         if nq == 1:     # hinge/slide
             v = float(value)
@@ -67,7 +67,7 @@ def check_joint_limits(model, data, tolerance=1e-4):
             continue
             
         joint = model.joint(joint_name)
-        joint_type = int(joint.type)
+        joint_type = int(joint.type.item())
         
         # Only check joints with limits (hinge and slide joints)
         if joint_type in (mujoco.mjtJoint.mjJNT_HINGE, mujoco.mjtJoint.mjJNT_SLIDE):
@@ -83,6 +83,12 @@ def check_joint_limits(model, data, tolerance=1e-4):
                 # Check for violations
                 assert current_pos >= lower_limit and current_pos <= upper_limit, f"Joint {joint_name} is at {current_pos} which is outside the limits {lower_limit} to {upper_limit}"
     return
+
+def get_body_pose(model, data, body_name):
+    body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body_name)
+    pos = data.xpos[body_id].copy()      # (3,)
+    quat = data.xquat[body_id].copy()    # (4,) [w, x, y, z]
+    return pos, quat
 
 if __name__ == "__main__":
     model = mujoco.MjModel.from_xml_path(_XML.as_posix())
@@ -123,28 +129,67 @@ if __name__ == "__main__":
     data = configuration.data
     solver = "daqp"
 
-    root_height_range = np.arange(0.2, 0.76, 0.01)[::-1]
-    # root_pitch_range = np.arange(0.0, 1.57, 0.01)
-    root_pitch_range = np.arange(0.0, 1.0, 0.01)
+    # Initialize to the home keyframe.
+    def _initialize_configuration():
+        configuration.update_from_keyframe("stand")
+        posture_task.set_target_from_configuration(configuration)
+        pelvis_pose_task.set_target_from_configuration(configuration)
+        left_foot_task.set_target_from_configuration(configuration)
+        right_foot_task.set_target_from_configuration(configuration)
+
+    def _solve_for_height(height):
+        _initialize_configuration()
+        com_task.set_target(np.array([0, 0, height]))
+        for _ in range(150):
+            q_star = build_qstar_with_joint_targets(
+                model, 
+                data.qpos, 
+                {   
+                    "left_shoulder_pitch_joint": 0.0,
+                    "left_shoulder_roll_joint": 0.0,
+                    "right_shoulder_pitch_joint": 0.0,
+                    "right_shoulder_roll_joint": 0.0,
+                    "left_elbow_joint": 0.0,
+                    "right_elbow_joint": 0.0,
+                    "waist_pitch_joint": 0.0,
+                    "waist_roll_joint": 0.0,
+                }
+            )
+            data.qpos[:] = q_star
+            mujoco.mj_forward(model, data)
+            posture_task.set_target(q_star)
+            vel = mink.solve_ik(
+                configuration, tasks, rate.dt, solver, 1e-1, limits=limits
+            )
+            configuration.integrate_inplace(vel, rate.dt)
+            check_joint_limits(model, data)
+            
+            mujoco.mj_camlight(model, data)
+            mujoco.mj_fwdPosition(model, data)
+            mujoco.mj_sensorPos(model, data)
+            
+            # Visualize at fixed FPS.
+            viewer.sync()
+            rate.sleep()
+            time.sleep(0.05)
+        pos, quat = get_body_pose(model, data, "pelvis")
+        print(f"Pelvis height: {pos[2]:.2f}, target root height: {height:.2f}")
+        # input()
+        return
+
+    root_height_range = np.arange(0.2, 0.5, 0.01)[::-1]
+    root_pitch_range = np.arange(0.0, 1.57, 0.01)
 
     with mujoco.viewer.launch_passive(
         model=model, data=data, show_left_ui=False, show_right_ui=False
     ) as viewer:
         mujoco.mjv_defaultFreeCamera(model, viewer.cam)
 
-        # Initialize to the home keyframe.
-        def _initialize_configuration():
-            configuration.update_from_keyframe("stand")
-            posture_task.set_target_from_configuration(configuration)
-            pelvis_pose_task.set_target_from_configuration(configuration)
-            left_foot_task.set_target_from_configuration(configuration)
-            right_foot_task.set_target_from_configuration(configuration)
-
         rate = RateLimiter(frequency=200.0, warn=False)
         while viewer.is_running():
             for height in root_height_range:
-                print(f"Solving for height: {height:.2f}")
-                _initialize_configuration()
+                _solve_for_height(height)
+
                 for pitch_rad in root_pitch_range:
                     # Update task targets
                     com_task.set_target(np.array([0, 0, height]))
