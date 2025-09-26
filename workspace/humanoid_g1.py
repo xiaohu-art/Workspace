@@ -149,6 +149,8 @@ if __name__ == "__main__":
                     "left_shoulder_roll_joint": 0.0,
                     "right_shoulder_pitch_joint": 0.0,
                     "right_shoulder_roll_joint": 0.0,
+                    "left_shoulder_yaw_joint": 0.0,
+                    "right_shoulder_yaw_joint": 0.0,
                     "left_elbow_joint": 0.0,
                     "right_elbow_joint": 0.0,
                     "waist_pitch_joint": 0.0,
@@ -177,7 +179,7 @@ if __name__ == "__main__":
         # input()
         return
 
-    root_height_range = np.arange(0.2, 0.5, 0.01)[::-1]
+    root_height_range = np.arange(0.2, 0.75, 0.01)[::-1]
     root_pitch_range = np.arange(0.0, 1.57, 0.01)
 
     with mujoco.viewer.launch_passive(
@@ -207,6 +209,8 @@ if __name__ == "__main__":
                                         "left_shoulder_roll_joint": 0.0,
                                         "right_shoulder_pitch_joint": 0.0,
                                         "right_shoulder_roll_joint": 0.0,
+                                        "left_shoulder_yaw_joint": 0.0,
+                                        "right_shoulder_yaw_joint": 0.0,
                                         "left_elbow_joint": 0.0,
                                         "right_elbow_joint": 0.0,
                                         "waist_pitch_joint": 0.0,
