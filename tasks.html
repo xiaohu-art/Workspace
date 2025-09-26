@@ -1,0 +1,1036 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tasks &mdash; mink  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="_static/mathjax/tex-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Limits" href="limits.html" />
+    <link rel="prev" title="Lie" href="lie.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            mink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lie.html">Lie</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tasks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mink.tasks.task.Objective"><code class="docutils literal notranslate"><span class="pre">Objective</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mink.tasks.task.Objective.H"><code class="docutils literal notranslate"><span class="pre">Objective.H</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mink.tasks.task.Objective.c"><code class="docutils literal notranslate"><span class="pre">Objective.c</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mink.tasks.task.Objective.value"><code class="docutils literal notranslate"><span class="pre">Objective.value()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mink.tasks.task.BaseTask"><code class="docutils literal notranslate"><span class="pre">BaseTask</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mink.tasks.task.BaseTask.compute_qp_objective"><code class="docutils literal notranslate"><span class="pre">BaseTask.compute_qp_objective()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mink.tasks.task.Task"><code class="docutils literal notranslate"><span class="pre">Task</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mink.tasks.task.Task.compute_error"><code class="docutils literal notranslate"><span class="pre">Task.compute_error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mink.tasks.task.Task.compute_jacobian"><code class="docutils literal notranslate"><span class="pre">Task.compute_jacobian()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mink.tasks.task.Task.compute_qp_objective"><code class="docutils literal notranslate"><span class="pre">Task.compute_qp_objective()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#kinematic-tasks">Kinematic Tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mink.tasks.frame_task">Frame task</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mink.tasks.frame_task.FrameTask"><code class="docutils literal notranslate"><span class="pre">FrameTask</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mink.tasks.relative_frame_task">Relative frame task</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mink.tasks.relative_frame_task.RelativeFrameTask"><code class="docutils literal notranslate"><span class="pre">RelativeFrameTask</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mink.tasks.com_task">Center of mass task</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mink.tasks.com_task.ComTask"><code class="docutils literal notranslate"><span class="pre">ComTask</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mink.tasks.equality_constraint_task">Equality constraint task</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mink.tasks.equality_constraint_task.EqualityConstraintTask"><code class="docutils literal notranslate"><span class="pre">EqualityConstraintTask</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#regularization-tasks">Regularization Tasks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mink.tasks.posture_task">Posture task</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mink.tasks.posture_task.PostureTask"><code class="docutils literal notranslate"><span class="pre">PostureTask</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mink.tasks.damping_task">Damping task</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mink.tasks.damping_task.DampingTask"><code class="docutils literal notranslate"><span class="pre">DampingTask</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mink.tasks.kinetic_energy_regularization_task">Kinetic energy regularization task</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#mink.tasks.kinetic_energy_regularization_task.KineticEnergyRegularizationTask"><code class="docutils literal notranslate"><span class="pre">KineticEnergyRegularizationTask</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="limits.html">Limits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inverse_kinematics.html">Inverse kinematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="derivations.html">Derivations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">mink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tasks</li>
+      <li class="wy-breadcrumbs-aside">
+              <!-- User defined GitHub URL -->
+              <a href="https://github.com/kevinzakka/mink/tree/main/docs/tasks.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tasks">
+<span id="id1"></span><h1>Tasks<a class="headerlink" href="#tasks" title="Link to this heading"></a></h1>
+<p id="module-mink.tasks.task">All kinematic tasks derive from the <a class="reference internal" href="#mink.tasks.task.Task" title="mink.tasks.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a> base class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.task.Objective">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.task.</span></span><span class="sig-name descname"><span class="pre">Objective</span></span><a class="headerlink" href="#mink.tasks.task.Objective" title="Link to this definition"></a></dt>
+<dd><p>Quadratic objective of the form
+<span class="math notranslate nohighlight">\(\frac{1}{2} \Delta q^T H \Delta q + c^T \Delta q\)</span>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.task.Objective.H">
+<span class="sig-name descname"><span class="pre">H</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#mink.tasks.task.Objective.H" title="Link to this definition"></a></dt>
+<dd><p>Hessian matrix, of shape (<span class="math notranslate nohighlight">\(n_v\)</span>, <span class="math notranslate nohighlight">\(n_v\)</span>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.task.Objective.c">
+<span class="sig-name descname"><span class="pre">c</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#mink.tasks.task.Objective.c" title="Link to this definition"></a></dt>
+<dd><p>Linear vector, of shape (<span class="math notranslate nohighlight">\(n_v\)</span>,).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.task.Objective.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#mink.tasks.task.Objective.value" title="Link to this definition"></a></dt>
+<dd><p>Returns the value of the objective at the input vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>ndarray</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.task.BaseTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.task.</span></span><span class="sig-name descname"><span class="pre">BaseTask</span></span><a class="headerlink" href="#mink.tasks.task.BaseTask" title="Link to this definition"></a></dt>
+<dd><p>Base class for all tasks.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.task.BaseTask.compute_qp_objective">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_qp_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mink.tasks.task.Objective" title="mink.tasks.task.Objective"><span class="pre">Objective</span></a></span></span><a class="headerlink" href="#mink.tasks.task.BaseTask.compute_qp_objective" title="Link to this definition"></a></dt>
+<dd><p>Compute the matrix-vector pair <span class="math notranslate nohighlight">\((H, c)\)</span> of the QP objective.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pair <span class="math notranslate nohighlight">\((H(q), c(q))\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mink.tasks.task.Objective" title="mink.tasks.task.Objective"><em>Objective</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.task.Task">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.task.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><a class="headerlink" href="#mink.tasks.task.Task" title="Link to this definition"></a></dt>
+<dd><p>Abstract base class for kinematic tasks.</p>
+<p>Subclasses must implement the configuration-dependent task error
+<a class="reference internal" href="#mink.tasks.task.Task.compute_error" title="mink.tasks.task.Task.compute_error"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_error()</span></code></a> and Jacobian <a class="reference internal" href="#mink.tasks.task.Task.compute_jacobian" title="mink.tasks.task.Task.compute_jacobian"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_jacobian()</span></code></a>
+functions.</p>
+<p>The error function <span class="math notranslate nohighlight">\(e(q) \in \mathbb{R}^{k}\)</span> is the quantity that
+the task aims to drive to zero (<span class="math notranslate nohighlight">\(k\)</span> is the dimension of the
+task). It appears in the first-order task dynamics:</p>
+<div class="math notranslate nohighlight">
+\[J(q) \Delta q = -\alpha e(q)\]</div>
+<p>The Jacobian matrix <span class="math notranslate nohighlight">\(J(q) \in \mathbb{R}^{k \times n_v}\)</span>, with
+<span class="math notranslate nohighlight">\(n_v\)</span> the dimension of the robot’s tangent space, is the
+derivative of the task error <span class="math notranslate nohighlight">\(e(q)\)</span> with respect to the
+configuration <span class="math notranslate nohighlight">\(q \in \mathbb{R}^{n_q}\)</span>. The configuration displacement
+<span class="math notranslate nohighlight">\(\Delta q\)</span> is the output of inverse kinematics; we divide it by dt to get a
+commanded velocity.</p>
+<p>In the first-order task dynamics, the error <span class="math notranslate nohighlight">\(e(q)\)</span> is multiplied
+by the task gain <span class="math notranslate nohighlight">\(\alpha \in [0, 1]\)</span>. This gain can be 1.0 for
+dead-beat control (<em>i.e.</em> converge as fast as possible), but might be
+unstable as it neglects our first-order approximation. Lower values
+cause slow down the task, similar to low-pass filtering.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.task.Task.compute_error">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.task.Task.compute_error" title="Link to this definition"></a></dt>
+<dd><p>Compute the task error at the current configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Task error vector <span class="math notranslate nohighlight">\(e(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.task.Task.compute_jacobian">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.task.Task.compute_jacobian" title="Link to this definition"></a></dt>
+<dd><p>Compute the task Jacobian at the current configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Task jacobian <span class="math notranslate nohighlight">\(J(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.task.Task.compute_qp_objective">
+<span class="sig-name descname"><span class="pre">compute_qp_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mink.tasks.task.Objective" title="mink.tasks.task.Objective"><span class="pre">Objective</span></a></span></span><a class="headerlink" href="#mink.tasks.task.Task.compute_qp_objective" title="Link to this definition"></a></dt>
+<dd><p>Compute the matrix-vector pair <span class="math notranslate nohighlight">\((H, c)\)</span> of the QP objective.</p>
+<p>This pair is such that the contribution of the task to the QP objective is:</p>
+<div class="math notranslate nohighlight">
+\[\| J \Delta q + \alpha e \|_{W}^2 = \frac{1}{2} \Delta q^T H
+\Delta q + c^T q\]</div>
+<p>The weight matrix <span class="math notranslate nohighlight">\(W \in \mathbb{R}^{k \times k}\)</span> weights and
+normalizes task coordinates to the same unit. The unit of the overall
+contribution is [cost]^2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pair <span class="math notranslate nohighlight">\((H(q), c(q))\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mink.tasks.task.Objective" title="mink.tasks.task.Objective"><em>Objective</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<section id="kinematic-tasks">
+<h2>Kinematic Tasks<a class="headerlink" href="#kinematic-tasks" title="Link to this heading"></a></h2>
+<section id="module-mink.tasks.frame_task">
+<span id="frame-task"></span><h3>Frame task<a class="headerlink" href="#module-mink.tasks.frame_task" title="Link to this heading"></a></h3>
+<p>Frame task implementation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.frame_task.FrameTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.frame_task.</span></span><span class="sig-name descname"><span class="pre">FrameTask</span></span><a class="headerlink" href="#mink.tasks.frame_task.FrameTask" title="Link to this definition"></a></dt>
+<dd><p>Regulate the position and orientation of a frame of interest on the robot.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.frame_task.FrameTask.frame_name">
+<span class="sig-name descname"><span class="pre">frame_name</span></span><a class="headerlink" href="#mink.tasks.frame_task.FrameTask.frame_name" title="Link to this definition"></a></dt>
+<dd><p>Name of the frame to regulate, typically the name of body, geom
+or site in the robot model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.frame_task.FrameTask.frame_type">
+<span class="sig-name descname"><span class="pre">frame_type</span></span><a class="headerlink" href="#mink.tasks.frame_task.FrameTask.frame_type" title="Link to this definition"></a></dt>
+<dd><p>The frame type: <cite>body</cite>, <cite>geom</cite> or <cite>site</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.frame_task.FrameTask.transform_target_to_world">
+<span class="sig-name descname"><span class="pre">transform_target_to_world</span></span><a class="headerlink" href="#mink.tasks.frame_task.FrameTask.transform_target_to_world" title="Link to this definition"></a></dt>
+<dd><p>Target pose of the frame in the world frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="lie.html#mink.lie.se3.SE3" title="mink.lie.se3.SE3">mink.lie.se3.SE3</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frame_task</span> <span class="o">=</span> <span class="n">FrameTask</span><span class="p">(</span>
+    <span class="n">frame_name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span>
+    <span class="n">frame_type</span><span class="o">=</span><span class="s2">&quot;site&quot;</span><span class="p">,</span>
+    <span class="n">position_cost</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">orientation_cost</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Update the target pose directly.</span>
+<span class="n">transform_target_to_world</span> <span class="o">=</span> <span class="n">SE3</span><span class="o">.</span><span class="n">from_translation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">frame_task</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="n">transform_target_to_world</span><span class="p">)</span>
+
+<span class="c1"># Or from the current configuration. This will automatically compute the</span>
+<span class="c1"># target pose from the current configuration and update the task target.</span>
+<span class="n">frame_task</span><span class="o">.</span><span class="n">set_target_from_configuration</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.frame_task.FrameTask.set_target">
+<span class="sig-name descname"><span class="pre">set_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_target_to_world</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lie.html#mink.lie.se3.SE3" title="mink.lie.se3.SE3"><span class="pre">SE3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.frame_task.FrameTask.set_target" title="Link to this definition"></a></dt>
+<dd><p>Set the target pose.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>transform_target_to_world</strong> (<a class="reference internal" href="lie.html#mink.lie.se3.SE3" title="mink.lie.se3.SE3"><em>SE3</em></a>) – Transform from the task target frame to the
+world frame.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.frame_task.FrameTask.set_target_from_configuration">
+<span class="sig-name descname"><span class="pre">set_target_from_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.frame_task.FrameTask.set_target_from_configuration" title="Link to this definition"></a></dt>
+<dd><p>Set the target pose from a given robot configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.frame_task.FrameTask.compute_error">
+<span class="sig-name descname"><span class="pre">compute_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.frame_task.FrameTask.compute_error" title="Link to this definition"></a></dt>
+<dd><p>Compute the frame task error.</p>
+<p>This error is a twist <span class="math notranslate nohighlight">\(e(q) \in se(3)\)</span> expressed in the local frame,
+i.e., it is a body twist. It is computed by taking the right-minus difference
+between the target pose <span class="math notranslate nohighlight">\(T_{0t}\)</span> and current frame pose <span class="math notranslate nohighlight">\(T_{0b}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[e(q) := {}_b \xi_{0b} = -(T_{t0} \ominus T_{b0})
+= -\log(T_{t0} \cdot T_{0b}) = -\log(T_{tb}) = \log(T_{bt})\]</div>
+<p>where <span class="math notranslate nohighlight">\(b\)</span> denotes our frame, <span class="math notranslate nohighlight">\(t\)</span> the target frame and
+<span class="math notranslate nohighlight">\(0\)</span> the inertial frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Frame task error vector <span class="math notranslate nohighlight">\(e(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.frame_task.FrameTask.compute_jacobian">
+<span class="sig-name descname"><span class="pre">compute_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.frame_task.FrameTask.compute_jacobian" title="Link to this definition"></a></dt>
+<dd><p>Compute the frame task Jacobian.</p>
+<p>The derivation of the formula for this Jacobian is detailed in
+<a class="reference internal" href="references.html#frametaskjacobian" id="id2"><span>[FrameTaskJacobian]</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Frame task jacobian <span class="math notranslate nohighlight">\(J(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mink.tasks.relative_frame_task">
+<span id="relative-frame-task"></span><h3>Relative frame task<a class="headerlink" href="#module-mink.tasks.relative_frame_task" title="Link to this heading"></a></h3>
+<p>Relative frame task implementation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.relative_frame_task.</span></span><span class="sig-name descname"><span class="pre">RelativeFrameTask</span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask" title="Link to this definition"></a></dt>
+<dd><p>Regulate the pose of a frame relative to another frame.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask.frame_name">
+<span class="sig-name descname"><span class="pre">frame_name</span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask.frame_name" title="Link to this definition"></a></dt>
+<dd><p>Name of the frame to regulate, typically the name of body, geom
+or site in the robot model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask.frame_type">
+<span class="sig-name descname"><span class="pre">frame_type</span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask.frame_type" title="Link to this definition"></a></dt>
+<dd><p>The frame type: <cite>body</cite>, <cite>geom</cite> or <cite>site</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask.root_name">
+<span class="sig-name descname"><span class="pre">root_name</span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask.root_name" title="Link to this definition"></a></dt>
+<dd><p>Name of the frame the task is relative to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask.root_type">
+<span class="sig-name descname"><span class="pre">root_type</span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask.root_type" title="Link to this definition"></a></dt>
+<dd><p>The root frame type: <cite>body</cite>, <cite>geom</cite> or <cite>site</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask.transform_target_to_root">
+<span class="sig-name descname"><span class="pre">transform_target_to_root</span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask.transform_target_to_root" title="Link to this definition"></a></dt>
+<dd><p>Target pose in the root frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="lie.html#mink.lie.se3.SE3" title="mink.lie.se3.SE3">mink.lie.se3.SE3</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask.set_target">
+<span class="sig-name descname"><span class="pre">set_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_target_to_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lie.html#mink.lie.se3.SE3" title="mink.lie.se3.SE3"><span class="pre">SE3</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask.set_target" title="Link to this definition"></a></dt>
+<dd><p>Set the target pose in the root frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>transform_target_to_root</strong> (<a class="reference internal" href="lie.html#mink.lie.se3.SE3" title="mink.lie.se3.SE3"><em>SE3</em></a>) – Transform from the task target frame to the
+root frame.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask.set_target_from_configuration">
+<span class="sig-name descname"><span class="pre">set_target_from_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask.set_target_from_configuration" title="Link to this definition"></a></dt>
+<dd><p>Set the target pose from a given robot configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask.compute_error">
+<span class="sig-name descname"><span class="pre">compute_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask.compute_error" title="Link to this definition"></a></dt>
+<dd><p>Compute the task error at the current configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Task error vector <span class="math notranslate nohighlight">\(e(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.relative_frame_task.RelativeFrameTask.compute_jacobian">
+<span class="sig-name descname"><span class="pre">compute_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.relative_frame_task.RelativeFrameTask.compute_jacobian" title="Link to this definition"></a></dt>
+<dd><p>Compute the task Jacobian at the current configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Task jacobian <span class="math notranslate nohighlight">\(J(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mink.tasks.com_task">
+<span id="center-of-mass-task"></span><h3>Center of mass task<a class="headerlink" href="#module-mink.tasks.com_task" title="Link to this heading"></a></h3>
+<p>Center-of-mass task implementation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.com_task.ComTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.com_task.</span></span><span class="sig-name descname"><span class="pre">ComTask</span></span><a class="headerlink" href="#mink.tasks.com_task.ComTask" title="Link to this definition"></a></dt>
+<dd><p>Regulate the center-of-mass (CoM) of a robot.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.com_task.ComTask.target_com">
+<span class="sig-name descname"><span class="pre">target_com</span></span><a class="headerlink" href="#mink.tasks.com_task.ComTask.target_com" title="Link to this definition"></a></dt>
+<dd><p>Target position of the CoM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">com_task</span> <span class="o">=</span> <span class="n">ComTask</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="c1"># Update the target CoM directly.</span>
+<span class="n">com_desired</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">com_task</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="n">com_desired</span><span class="p">)</span>
+
+<span class="c1"># Or from a keyframe defined in the model.</span>
+<span class="n">configuration</span><span class="o">.</span><span class="n">update_from_keyframe</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
+<span class="n">com_task</span><span class="o">.</span><span class="n">set_target_from_configuration</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.com_task.ComTask.set_cost">
+<span class="sig-name descname"><span class="pre">set_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.com_task.ComTask.set_cost" title="Link to this definition"></a></dt>
+<dd><p>Set the cost of the CoM task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cost</strong> (<em>ArrayLike</em>) – A vector of shape (1,) (aka identical cost for all coordinates),
+or (3,) (aka different costs for each coordinate).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.com_task.ComTask.set_target">
+<span class="sig-name descname"><span class="pre">set_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_com</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.com_task.ComTask.set_target" title="Link to this definition"></a></dt>
+<dd><p>Set the target CoM position in the world frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target_com</strong> (<em>ArrayLike</em>) – A vector of shape (3,) representing the desired
+center-of-mass position in the world frame.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.com_task.ComTask.set_target_from_configuration">
+<span class="sig-name descname"><span class="pre">set_target_from_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.com_task.ComTask.set_target_from_configuration" title="Link to this definition"></a></dt>
+<dd><p>Set the target CoM from a given robot configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.com_task.ComTask.compute_error">
+<span class="sig-name descname"><span class="pre">compute_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.com_task.ComTask.compute_error" title="Link to this definition"></a></dt>
+<dd><p>Compute the CoM task error.</p>
+<p>The center of mass <span class="math notranslate nohighlight">\(c(q)\)</span> for a collection of bodies <span class="math notranslate nohighlight">\(\mathcal{B}\)</span>
+is the mass-weighted average of their individual centers of mass. After running
+forward kinematics, in particular after calling <code class="docutils literal notranslate"><span class="pre">mj_comPos</span></code>, MuJoCo stores
+the CoM of each subtree in <code class="docutils literal notranslate"><span class="pre">data.subtree_com</span></code>. This task uses the CoM of the
+subtree starting from body 1, which is the entire robot excluding the world
+body (body 0).</p>
+<p>The task error <span class="math notranslate nohighlight">\(e(q)\)</span> is the difference between the current CoM
+<span class="math notranslate nohighlight">\(c(q)\)</span> and the target CoM <span class="math notranslate nohighlight">\(c^*\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[e(q) = c(q) - c^*\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Center-of-mass task error vector <span class="math notranslate nohighlight">\(e(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.com_task.ComTask.compute_jacobian">
+<span class="sig-name descname"><span class="pre">compute_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.com_task.ComTask.compute_jacobian" title="Link to this definition"></a></dt>
+<dd><p>Compute the Jacobian of the CoM task error <span class="math notranslate nohighlight">\(e(q)\)</span>.</p>
+<p>The Jacobian is the derivative of this error with respect to the
+generalized coordinates <span class="math notranslate nohighlight">\(q\)</span>. Since the target <span class="math notranslate nohighlight">\(c^*\)</span> is
+constant, the Jacobian of the error simplifies to the Jacobian of the
+CoM position <span class="math notranslate nohighlight">\(c(q)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[J(q) = \frac{\partial e(q)}{\partial q} = \frac{\partial c(q)}{\partial q}\]</div>
+<p>MuJoCo’s <code class="docutils literal notranslate"><span class="pre">mj_jacSubtreeCom</span></code> function computes this Jacobian using the
+formula:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial c(q)}{\partial q} =
+\frac{1}{M} \sum_{i \in \mathcal{B}} m_i \frac{\partial p_i(q)}{\partial q}
+= \frac{1}{M} \sum_{i \in \mathcal{B}} m_i J_i(q)\]</div>
+<p>where <span class="math notranslate nohighlight">\(M = \sum_{i \in \mathcal{B}} m_i\)</span> is the total mass of the subtree,
+<span class="math notranslate nohighlight">\(m_i\)</span> is the mass of body <span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(p_i(q)\)</span> is the position
+of the origin of body frame <span class="math notranslate nohighlight">\(i\)</span> in the world frame, <span class="math notranslate nohighlight">\(J_i(q) =
+\frac{\partial p_i(q)}{\partial q}\)</span> is the Jacobian mapping joint velocities to
+the linear velocity of the origin of body frame <span class="math notranslate nohighlight">\(i\)</span>, and the sum is over
+all bodies <span class="math notranslate nohighlight">\(\mathcal{B}\)</span> in the specified subtree (body 1 and its
+descendants).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Jacobian of the center-of-mass task error <span class="math notranslate nohighlight">\(J(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mink.tasks.equality_constraint_task">
+<span id="equality-constraint-task"></span><h3>Equality constraint task<a class="headerlink" href="#module-mink.tasks.equality_constraint_task" title="Link to this heading"></a></h3>
+<p>Equality constraint task implementation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.equality_constraint_task.EqualityConstraintTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.equality_constraint_task.</span></span><span class="sig-name descname"><span class="pre">EqualityConstraintTask</span></span><a class="headerlink" href="#mink.tasks.equality_constraint_task.EqualityConstraintTask" title="Link to this definition"></a></dt>
+<dd><p>Regulate equality constraints in a model.</p>
+<p>Equality constraints are useful, among other things, for modeling “loop joints”
+such as four-bar linkages. In MuJoCo, there are several types of equality
+constraints, including:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mjEQ_CONNECT</span></code>: Connect two bodies at a point (ball joint).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mjEQ_WELD</span></code>: Fix relative pose of two bodies.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mjEQ_JOINT</span></code>: Couple the values of two scalar joints.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mjEQ_TENDON</span></code>: Couple the values of two tendons.</p></li>
+</ul>
+<p>This task can regulate all equality constraints in the model or a specific subset
+identified by name or ID.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>MuJoCo computes the constraint residual and its Jacobian and stores them in
+<code class="docutils literal notranslate"><span class="pre">data.efc_pos</span></code> and <code class="docutils literal notranslate"><span class="pre">data.efc_J</span></code> (potentially in sparse format), respectively.
+The <a class="reference internal" href="#mink.tasks.equality_constraint_task.EqualityConstraintTask.compute_error" title="mink.tasks.equality_constraint_task.EqualityConstraintTask.compute_error"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_error()</span></code></a> and <a class="reference internal" href="#mink.tasks.equality_constraint_task.EqualityConstraintTask.compute_jacobian" title="mink.tasks.equality_constraint_task.EqualityConstraintTask.compute_jacobian"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_jacobian()</span></code></a> methods simply extract the
+rows corresponding to the active equality constraints specified for this task
+from <code class="docutils literal notranslate"><span class="pre">data.efc_pos</span></code> and <code class="docutils literal notranslate"><span class="pre">data.efc_J</span></code>. More information on MuJoCo’s constraint
+model can be found in <a class="reference internal" href="references.html#mujocoequalityconstraints" id="id3"><span>[MuJoCoEqualityConstraints]</span></a>.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.equality_constraint_task.EqualityConstraintTask.equalities">
+<span class="sig-name descname"><span class="pre">equalities</span></span><a class="headerlink" href="#mink.tasks.equality_constraint_task.EqualityConstraintTask.equalities" title="Link to this definition"></a></dt>
+<dd><p>ID or name of the equality constraints to regulate. If not provided,
+the task will regulate all equality constraints in the model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.equality_constraint_task.EqualityConstraintTask.cost">
+<span class="sig-name descname"><span class="pre">cost</span></span><a class="headerlink" href="#mink.tasks.equality_constraint_task.EqualityConstraintTask.cost" title="Link to this definition"></a></dt>
+<dd><p>Cost vector for the equality constraint task. Either a scalar, in which
+case the same cost is applied to all constraints, or a vector of shape
+<code class="docutils literal notranslate"><span class="pre">(neq,)</span></code>, where <code class="docutils literal notranslate"><span class="pre">neq</span></code> is the number of equality constraints in the
+model.</p>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>InvalidConstraint</strong> – If a specified equality constraint name or ID is not found,
+    or if the constraint is not active at the initial configuration.</p></li>
+<li><p><strong>TaskDefinitionError</strong> – If no equality constraints are found or if cost parameters
+    have invalid shape or values.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Regulate all equality constraints with the same cost.</span>
+<span class="n">eq_task</span> <span class="o">=</span> <span class="n">EqualityConstraintTask</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="c1"># Regulate specific equality constraints with different costs.</span>
+<span class="n">eq_task</span> <span class="o">=</span> <span class="n">EqualityConstraintTask</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">cost</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
+    <span class="n">equalities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;connect_right&quot;</span><span class="p">,</span> <span class="s2">&quot;connect_left&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.equality_constraint_task.EqualityConstraintTask.set_cost">
+<span class="sig-name descname"><span class="pre">set_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.equality_constraint_task.EqualityConstraintTask.set_cost" title="Link to this definition"></a></dt>
+<dd><p>Set the cost vector for the equality constraint task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cost</strong> (<em>ArrayLike</em>) – Cost vector for the equality constraint task.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.equality_constraint_task.EqualityConstraintTask.compute_error">
+<span class="sig-name descname"><span class="pre">compute_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.equality_constraint_task.EqualityConstraintTask.compute_error" title="Link to this definition"></a></dt>
+<dd><p>Compute the task error (constraint residual) <span class="math notranslate nohighlight">\(e(q) = r(q)\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Task error vector <span class="math notranslate nohighlight">\(e(q)\)</span> for the active equality constraints.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.equality_constraint_task.EqualityConstraintTask.compute_jacobian">
+<span class="sig-name descname"><span class="pre">compute_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.equality_constraint_task.EqualityConstraintTask.compute_jacobian" title="Link to this definition"></a></dt>
+<dd><p>Compute the task Jacobian (constraint Jacobian) <span class="math notranslate nohighlight">\(J(q) = J_r(q)\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Task jacobian <span class="math notranslate nohighlight">\(J(q)\)</span> for the active equality constraints.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="regularization-tasks">
+<h2>Regularization Tasks<a class="headerlink" href="#regularization-tasks" title="Link to this heading"></a></h2>
+<section id="module-mink.tasks.posture_task">
+<span id="posture-task"></span><h3>Posture task<a class="headerlink" href="#module-mink.tasks.posture_task" title="Link to this heading"></a></h3>
+<p>Posture task implementation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.posture_task.PostureTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.posture_task.</span></span><span class="sig-name descname"><span class="pre">PostureTask</span></span><a class="headerlink" href="#mink.tasks.posture_task.PostureTask" title="Link to this definition"></a></dt>
+<dd><p>Regulate joint angles towards a target posture.</p>
+<p>Often used with a low priority in the task stack, this task acts like a regularizer,
+biasing the solution toward a specific joint configuration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mink.tasks.posture_task.PostureTask.target_q">
+<span class="sig-name descname"><span class="pre">target_q</span></span><a class="headerlink" href="#mink.tasks.posture_task.PostureTask.target_q" title="Link to this definition"></a></dt>
+<dd><p>Target configuration <span class="math notranslate nohighlight">\(q^*\)</span>, of shape <span class="math notranslate nohighlight">\((n_q,)\)</span>. Units are
+radians for revolute joints and meters for prismatic joints. Note that
+floating-base coordinates are not affected by this task but should be
+included in the target configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">posture_task</span> <span class="o">=</span> <span class="n">PostureTask</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+
+<span class="c1"># Update the target posture directly.</span>
+<span class="n">q_desired</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">posture_task</span><span class="o">.</span><span class="n">set_target</span><span class="p">(</span><span class="n">q_desired</span><span class="p">)</span>
+
+<span class="c1"># Or from a keyframe defined in the model.</span>
+<span class="n">configuration</span><span class="o">.</span><span class="n">update_from_keyframe</span><span class="p">(</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>
+<span class="n">posture_task</span><span class="o">.</span><span class="n">set_target_from_configuration</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.posture_task.PostureTask.set_target">
+<span class="sig-name descname"><span class="pre">set_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.posture_task.PostureTask.set_target" title="Link to this definition"></a></dt>
+<dd><p>Set the target posture.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target_q</strong> (<em>ArrayLike</em>) – A vector of shape (nq,) representing the desired joint
+configuration.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.posture_task.PostureTask.set_target_from_configuration">
+<span class="sig-name descname"><span class="pre">set_target_from_configuration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.posture_task.PostureTask.set_target_from_configuration" title="Link to this definition"></a></dt>
+<dd><p>Set the target posture by extracting it from the current configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.posture_task.PostureTask.compute_error">
+<span class="sig-name descname"><span class="pre">compute_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.posture_task.PostureTask.compute_error" title="Link to this definition"></a></dt>
+<dd><p>Compute the posture task error.</p>
+<p>The error is defined as:</p>
+<div class="math notranslate nohighlight">
+\[e(q) = q^* \ominus q\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Posture task error vector <span class="math notranslate nohighlight">\(e(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.posture_task.PostureTask.compute_jacobian">
+<span class="sig-name descname"><span class="pre">compute_jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.posture_task.PostureTask.compute_jacobian" title="Link to this definition"></a></dt>
+<dd><p>Compute the posture task Jacobian.</p>
+<p>The task Jacobian is defined as:</p>
+<div class="math notranslate nohighlight">
+\[J(q) = I_{n_v}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Posture task jacobian <span class="math notranslate nohighlight">\(J(q)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mink.tasks.damping_task">
+<span id="damping-task"></span><h3>Damping task<a class="headerlink" href="#module-mink.tasks.damping_task" title="Link to this heading"></a></h3>
+<p>Damping task implementation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.damping_task.DampingTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.damping_task.</span></span><span class="sig-name descname"><span class="pre">DampingTask</span></span><a class="headerlink" href="#mink.tasks.damping_task.DampingTask" title="Link to this definition"></a></dt>
+<dd><p>L2-regularization on joint velocities (a.k.a. <em>velocity damping</em>).</p>
+<p>This task, typically used with a low priority in the task stack, adds a
+Levenberg-Marquardt term to the quadratic program, favoring <strong>minimum-norm
+joint velocities</strong> in redundant or near-singular situations. Formally, it
+contributes the following term to the quadratic program:</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{2}\,\Delta \mathbf{q}^\top \Lambda\,\Delta \mathbf{q},\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Delta \mathbf{q}\in\mathbb{R}^{n_v}\)</span> is the vector of joint
+displacements and <span class="math notranslate nohighlight">\(\Lambda = \mathrm{diag}(\lambda_1, \ldots, \lambda_{n_v})\)</span>
+is a diagonal matrix of per-DoF damping weights specified via <code class="docutils literal notranslate"><span class="pre">cost</span></code>. A larger
+<span class="math notranslate nohighlight">\(\lambda_i\)</span> reduces motion in DoF <span class="math notranslate nohighlight">\(i\)</span>. With no other active
+tasks, the robot remains at rest. Unlike the <cite>damping</cite> parameter in
+<a class="reference internal" href="inverse_kinematics.html#mink.solve_ik.solve_ik" title="mink.solve_ik.solve_ik"><code class="xref py py-func docutils literal notranslate"><span class="pre">solve_ik()</span></code></a>, which is uniformly applied to all DoFs, this task does
+not affect the floating-base coordinates.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This task does not favor a particular posture, only small instantaneous motion.
+If you need a posture bias, use <a class="reference internal" href="#mink.tasks.posture_task.PostureTask" title="mink.tasks.posture_task.PostureTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">PostureTask</span></code></a> instead.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Uniform damping across all degrees of freedom.</span>
+<span class="n">damping_task</span> <span class="o">=</span> <span class="n">DampingTask</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="c1"># Custom damping.</span>
+<span class="n">cost</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">nv</span><span class="p">)</span>
+<span class="n">cost</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># High damping for the first 3 joints.</span>
+<span class="n">cost</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># Lower damping for the remaining joints.</span>
+<span class="n">damping_task</span> <span class="o">=</span> <span class="n">DampingTask</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">cost</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.damping_task.DampingTask.compute_error">
+<span class="sig-name descname"><span class="pre">compute_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#mink.tasks.damping_task.DampingTask.compute_error" title="Link to this definition"></a></dt>
+<dd><p>Compute the damping task error.</p>
+<p>The damping task does not chase a reference; its desired joint velocity
+is identically <strong>zero</strong>, so the task error is always:</p>
+<div class="math notranslate nohighlight">
+\[e = \mathbf 0 \in \mathbb R^{n_v}.\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Zero vector of length <span class="math notranslate nohighlight">\(n_v\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>ndarray</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mink.tasks.kinetic_energy_regularization_task">
+<span id="kinetic-energy-regularization-task"></span><h3>Kinetic energy regularization task<a class="headerlink" href="#module-mink.tasks.kinetic_energy_regularization_task" title="Link to this heading"></a></h3>
+<p>Kinetic energy regularization task implementation.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mink.tasks.kinetic_energy_regularization_task.KineticEnergyRegularizationTask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mink.tasks.kinetic_energy_regularization_task.</span></span><span class="sig-name descname"><span class="pre">KineticEnergyRegularizationTask</span></span><a class="headerlink" href="#mink.tasks.kinetic_energy_regularization_task.KineticEnergyRegularizationTask" title="Link to this definition"></a></dt>
+<dd><p>Kinetic-energy regularization.</p>
+<p>This task, often used with a low priority in the task stack, penalizes the system’s
+kinetic energy. Formally, it contributes the following term to the quadratic
+program:</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{2}\, \lambda\, \Delta \mathbf{q}^\top M(\mathbf{q})\,\Delta \mathbf{q},\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Delta \mathbf{q}\in\mathbb{R}^{n_v}\)</span> is the vector of joint
+displacements, <span class="math notranslate nohighlight">\(M(\mathbf{q})\)</span> is the joint-space inertia matrix, and
+<span class="math notranslate nohighlight">\(\lambda\)</span> is the scalar strength of the regularization.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This task can be seen as an inertia-weighted version of the
+<a class="reference internal" href="#mink.tasks.damping_task.DampingTask" title="mink.tasks.damping_task.DampingTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">DampingTask</span></code></a>. Degrees of freedom with higher inertia will move less
+for the same cost.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The integration timestep <span class="math notranslate nohighlight">\(\Delta t\)</span> must be set via <a class="reference internal" href="#mink.tasks.kinetic_energy_regularization_task.KineticEnergyRegularizationTask.set_dt" title="mink.tasks.kinetic_energy_regularization_task.KineticEnergyRegularizationTask.set_dt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_dt()</span></code></a>
+before use. This ensures the cost is expressed in units of energy (Joules).</p>
+</div>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">task</span> <span class="o">=</span> <span class="n">KineticEnergyRegularizationTask</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span>
+<span class="n">task</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="mf">0.02</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.kinetic_energy_regularization_task.KineticEnergyRegularizationTask.set_dt">
+<span class="sig-name descname"><span class="pre">set_dt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mink.tasks.kinetic_energy_regularization_task.KineticEnergyRegularizationTask.set_dt" title="Link to this definition"></a></dt>
+<dd><p>Set the integration timestep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<em>float</em>) – Integration timestep in [s].</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mink.tasks.kinetic_energy_regularization_task.KineticEnergyRegularizationTask.compute_qp_objective">
+<span class="sig-name descname"><span class="pre">compute_qp_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><span class="pre">Configuration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mink.tasks.task.Objective" title="mink.tasks.task.Objective"><span class="pre">Objective</span></a></span></span><a class="headerlink" href="#mink.tasks.kinetic_energy_regularization_task.KineticEnergyRegularizationTask.compute_qp_objective" title="Link to this definition"></a></dt>
+<dd><p>Compute the matrix-vector pair <span class="math notranslate nohighlight">\((H, c)\)</span> of the QP objective.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>configuration</strong> (<a class="reference internal" href="configuration.html#mink.configuration.Configuration" title="mink.configuration.Configuration"><em>Configuration</em></a>) – Robot configuration <span class="math notranslate nohighlight">\(q\)</span>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pair <span class="math notranslate nohighlight">\((H(q), c(q))\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mink.tasks.task.Objective" title="mink.tasks.task.Objective"><em>Objective</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lie.html" class="btn btn-neutral float-left" title="Lie" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="limits.html" class="btn btn-neutral float-right" title="Limits" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Kevin Zakka.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
